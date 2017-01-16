@@ -31,7 +31,6 @@ def main():
 	columns = [x[1:3] for x in lst[2:-1]]
 
 	# iterate through the varialble to get the row value
-	index = 0
 	for value in columns:
 		# check for every row and assign the values to variable x and y
 		if value:

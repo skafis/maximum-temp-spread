@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
 The accompanying file weather.dat contains weather data for a single month as space-separated values. The first column (Dy) contains the day of the month; the second (MxT) contains the maximum temperature for that day, while the third (MnT) contains the minimum temperature.
 
@@ -16,48 +15,25 @@ $ python weather.py
 (The actual day and spread will depend on the contents of the file.)
 """
 
-# initiate a function main
-def main():
-	# open file
-	file = open('weather.dat')
-	# initiate empty list lst
-	lst = []
-	# iterate through the file 
-	for line in file:
-		# split the lines and add to empty list lst
-		lst += [line.split()]
 
-	# get the columns that we want to work that is column 2 & 3 and remove the first two and last rows and assign it to a varailble
-	columns = [x[1:3] for x in lst[2:-1]]
+# import pandas module as varible p
+import pandas as pd
 
-	# iterate through the varialble to get the row value
-	for value in columns:
-		# check for every row and assign the values to variable x and y
-		if value:
-			x,y = value
+# open the the weather.dat file
+open_file = pd.read_csv('weather.dat', sep='\s+')
 
-			# convert to integers and remove non integer characters
-			value1 =  int(x.strip('*'))
-			value2 = int(y.strip('*'))
+# get the columns we need and strip off any non integer character bypassing an an anonymous
+# function as an argument to openfile
+open_file[['MxT', 'MnT']] = open_file[['MxT', 'MnT']].apply(lambda x: x.str[:2].astype(int))
 
-			# call the calculate function and pass in the variable
-			print calculate(value1, value2)
+# find the difference between the two columns
+spread = open_file.MxT - open_file.MnT
 
+# find the maximum spread and the index 
+max_spread = spread.index[spread==max(spread)].tolist()
 
-def calculate(value1, value2):
-	# in
-	max_spread = 1
-	# get the difference between the values
-	spread  = value1 - value2
-	max_spread = 0 
+# find the row with the highest spread unstack them to a list 
+max_spread_column = open_file.loc[max_spread][['Dy', 'MxT', 'MnT']].unstack().tolist()
 
-	# check if the result is grater than 0
-	if spread > max_spread:
-		# if true assign the result to maximum spread
-		max_spread = spread
-		# return the maximum spread
-		return max_spread
-
-
-
-if __name__=="__main__":main()
+# customize the results to get the desired output
+print max_spread_column[0], max_spread_column[1]-max_spread_column[2]
